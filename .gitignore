@@ -14,7 +14,7 @@ ENV/
 .env.*
 !.env.example
 
-# Database & Local Storage (if using local sqlite/logs)
+# Database & Local Caches
 *.db
 *.sqlite3
 *.log
@@ -24,11 +24,6 @@ ENV/
 .idea/
 *.swp
 *.swo
-
-# Testing & Coverage
-.pytest_cache/
-.coverage
-htmlcov/
 
 # OS Generated Files
 .DS_Store

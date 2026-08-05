@@ -7,3 +7,6 @@ python-dotenv
 jinja2
 python-multipart
 passlib[bcrypt]
+pydantic
+pydantic[email]
+

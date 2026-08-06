@@ -85,3 +85,14 @@ class ProductRepository:
 
         db.delete(product)
         db.commit()
+
+    def get_by_title(
+        self,
+        db: Session,
+        title: str,
+    ):
+        return (
+            db.query(Product)
+            .filter(Product.title == title)
+            .first()
+        )

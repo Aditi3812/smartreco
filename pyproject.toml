@@ -23,4 +23,5 @@ dependencies = [
     "mypy==1.19.1",
     "dotenv>=0.9.9",
     "argon2-cffi>=25.1.0",
+    "python-jose[cryptography]>=3.5.0",
 ]

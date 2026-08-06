@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.repositories.user_repository import UserRepository
 from app.schemas.user import UserCreate
 from app.services.password_service import password_service
-
+from app.services.jwt_service import jwt_service
 
 class AuthService:
     """Handles user authentication business logic."""

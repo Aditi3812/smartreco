@@ -96,3 +96,16 @@ class ProductRepository:
             .filter(Product.title == title)
             .first()
         )
+    def search_products(
+        self,
+        db: Session,
+        query: str,
+    ):
+
+        return (
+            db.query(Product)
+            .filter(
+                Product.title.ilike(f"%{query}%")
+            )
+            .all()
+        )

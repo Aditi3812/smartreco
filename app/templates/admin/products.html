@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Admin Products</title>
+</head>
+
+
+<body>
+
+
+<h1>
+Admin Product Dashboard
+</h1>
+
+
+
+<h2>
+Add Product
+</h2>
+
+
+<form action="/admin/products/create" method="post">
+
+    <input
+        type="text"
+        name="title"
+        placeholder="Title"
+        required
+    >
+
+    <textarea
+        name="description"
+        placeholder="Description"
+        required
+    ></textarea>
+
+    <input
+        type="text"
+        name="category"
+        placeholder="Category"
+        required
+    >
+
+    <input
+        type="text"
+        name="difficulty"
+        placeholder="Difficulty (Beginner / Intermediate / Advanced)"
+        required
+    >
+
+    <input
+        type="text"
+        name="language"
+        value="English"
+    >
+
+    <input
+        type="number"
+        name="duration"
+        placeholder="Duration (hours)"
+        required
+    >
+
+    <input
+        type="number"
+        step="0.01"
+        name="price"
+        placeholder="Price"
+        required
+    >
+
+    <input
+        type="text"
+        name="instructor"
+        placeholder="Instructor"
+        required
+    >
+
+    <input
+        type="text"
+        name="skills"
+        placeholder="Python, FastAPI, AI"
+        required
+    >
+
+    <input
+        type="text"
+        name="tags"
+        placeholder="backend,api,recommendation"
+        required
+    >
+
+    <button type="submit">
+        Create Product
+    </button>
+
+</form>
+
+
+
+<hr>
+
+
+
+<h2>
+Existing Products
+</h2>
+
+
+
+{% for product in products %}
+
+
+<div>
+
+
+<h3>
+{{product.title}}
+</h3>
+
+
+<p>
+{{product.category}}
+</p>
+
+
+<p>
+₹{{product.price}}
+</p>
+
+
+<a href="/admin/products/delete/{{product.id}}">
+Delete
+</a>
+
+
+</div>
+
+
+<hr>
+
+
+{% endfor %}
+
+
+</body>
+
+</html>

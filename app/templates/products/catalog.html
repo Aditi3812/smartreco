@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title>Products</title>
+</head>
+
+
+<body>
+
+<h1>SmartReco Catalog</h1>
+<form method="GET">
+
+    <input
+        type="text"
+        name="q"
+        placeholder="Search courses..."
+        value="{{ query }}"
+    >
+
+    <button>
+        Search
+    </button>
+
+</form>
+
+<hr>
+
+{% for product in products %}
+
+<div>
+
+<h2>
+{{ product.title }}
+</h2>
+
+
+<p>
+{{ product.description }}
+</p>
+
+
+<p>
+Category:
+{{ product.category }}
+</p>
+
+
+<p>
+Price:
+{{ product.price }}
+</p>
+
+
+<a href="/products/{{product.id}}">
+View Details
+</a>
+
+
+</div>
+
+<hr>
+
+
+{% endfor %}
+
+
+</body>
+
+</html>

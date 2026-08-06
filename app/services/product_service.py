@@ -102,6 +102,21 @@ class ProductService:
             db,
             product,
         )
+    def search_products(
+        self,
+        db: Session,
+        query: str,
+    ):
+
+        query = query.strip()
+
+        if not query:
+            return self.get_all_products(db)
+
+        return self.product_repository.search_products(
+            db,
+            query,
+        )
 
 
 product_service = ProductService()

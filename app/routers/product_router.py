@@ -1,21 +1,25 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.orm import Session
-
+from fastapi.responses import HTMLResponse
 from app.auth.dependencies import (
     get_current_user,
-    require_admin,
 )
 from app.database.database import get_db
 from app.schemas.product import (
     ProductCreate,
     ProductResponse,
 )
+from fastapi.templating import Jinja2Templates
 from app.services.product_service import product_service
-
+from app.auth.permissions import require_admin
 router = APIRouter(
     prefix="/products",
     tags=["Products"],
 )
+templates = Jinja2Templates(
+    directory="app/templates"
+)
+
 @router.post(
     "",
     response_model=ProductResponse,
@@ -38,36 +42,57 @@ def create_product(
         )
 @router.get(
     "",
-    response_model=list[ProductResponse],
+    response_class=HTMLResponse,
 )
-def get_products(
+def product_catalog(
+    request: Request,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    q: str = Query(default=""),
 ):
-    return product_service.get_all_products(
+
+    products = product_service.search_products(
         db,
+        q,
+    )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="products/catalog.html",
+        context={
+            "products": products,
+            "request": request,
+            "query": q,
+        },
     )
 @router.get(
     "/{product_id}",
-    response_model=ProductResponse,
+    response_class=HTMLResponse,
 )
-def get_product(
+def product_detail(
     product_id: int,
+    request: Request,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
 ):
+
     product = product_service.get_product(
         db,
         product_id,
     )
 
-    if not product:
+    if product is None:
         raise HTTPException(
             status_code=404,
             detail="Product not found",
         )
 
-    return product
+    return templates.TemplateResponse(
+        request=request,
+        name="products/detail.html",
+        context={
+            "product": product,
+        },
+    )
+
 @router.delete(
     "/{product_id}",
 )

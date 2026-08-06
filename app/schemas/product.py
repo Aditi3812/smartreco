@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-
+from typing import List
 
 class ProductCreate(BaseModel):
     title: str = Field(min_length=3, max_length=200)
@@ -42,3 +42,15 @@ class ProductResponse(BaseModel):
     embedding_generated: bool
 
     model_config = ConfigDict(from_attributes=True)
+
+class ProductListResponse(BaseModel):
+
+    page: int
+
+    limit: int
+
+    total: int
+
+    pages: int
+
+    items: List[ProductResponse]

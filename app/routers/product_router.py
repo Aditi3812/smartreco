@@ -48,20 +48,34 @@ def product_catalog(
     request: Request,
     db: Session = Depends(get_db),
     q: str = Query(default=""),
+    page: int = Query(
+        default=1,
+        ge=1,
+    ),
+    limit: int = Query(
+        default=10,
+        ge=1,
+        le=100,
+    ),
 ):
 
-    products = product_service.search_products(
+    products_data = product_service.search_products(
         db,
         q,
+        page,
+        limit,
     )
 
     return templates.TemplateResponse(
         request=request,
         name="products/catalog.html",
         context={
-            "products": products,
+            "products": products_data["items"],
             "request": request,
             "query": q,
+            "page": products_data["page"],
+            "pages": products_data["pages"],
+            "total": products_data["total"],
         },
     )
 @router.get(

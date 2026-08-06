@@ -32,7 +32,9 @@
 <div>
 
 <h2>
-{{ product.title }}
+<a href="/products/{{product.id}}">
+{{product.title}}
+</a>
 </h2>
 
 
@@ -65,7 +67,42 @@ View Details
 
 {% endfor %}
 
+<hr>
 
+
+<div class="pagination">
+
+
+{% if page > 1 %}
+
+<a href="/products?page={{page-1}}&q={{query}}">
+Previous
+</a>
+
+{% endif %}
+
+
+
+{% for p in range(1, pages + 1) %}
+
+<a href="/products?page={{p}}&q={{query}}">
+{{p}}
+</a>
+
+{% endfor %}
+
+
+
+{% if page < pages %}
+
+<a href="/products?page={{page+1}}&q={{query}}">
+Next
+</a>
+
+{% endif %}
+
+
+</div>
 </body>
 
 </html>

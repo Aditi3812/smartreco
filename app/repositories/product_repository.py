@@ -48,12 +48,33 @@ class ProductRepository:
         )
 
     def get_all_products(
-        self,
-        db: Session,
-    ):
+    self,
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+):
 
-        return db.query(Product).all()
+        return (
+            db.query(Product)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+    
+    def count_search_products(
+    self,
+    db: Session,
+    query: str,
+):
 
+        return (
+            db.query(Product)
+            .filter(
+                Product.title.ilike(f"%{query}%")
+            )
+            .count()
+        )
+    
     def get_by_category(
         self,
         db: Session,
@@ -97,15 +118,19 @@ class ProductRepository:
             .first()
         )
     def search_products(
-        self,
-        db: Session,
-        query: str,
-    ):
+    self,
+    db: Session,
+    query: str,
+    skip: int = 0,
+    limit: int = 10,
+):
 
         return (
             db.query(Product)
             .filter(
                 Product.title.ilike(f"%{query}%")
             )
+            .offset(skip)
+            .limit(limit)
             .all()
         )

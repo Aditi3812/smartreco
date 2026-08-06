@@ -65,12 +65,41 @@ class ProductService:
         )
 
     def get_all_products(
-        self,
-        db: Session,
-    ):
-        return self.product_repository.get_all_products(
-            db,
+    self,
+    db: Session,
+    page: int,
+    limit: int,
+):
+
+        skip = (page - 1) * limit
+
+
+        products = (
+            self.product_repository
+            .get_all_products(
+                db,
+                skip,
+                limit,
+            )
         )
+
+
+        total = (
+            self.product_repository
+            .count_products(db)
+        )
+
+
+        pages = (total + limit - 1) // limit
+
+
+        return {
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "pages": pages,
+            "items": products,
+        }
 
     def get_products_by_category(
         self,
@@ -103,20 +132,35 @@ class ProductService:
             product,
         )
     def search_products(
-        self,
-        db: Session,
-        query: str,
-    ):
+    self,
+    db: Session,
+    query: str,
+    page: int,
+    limit: int,
+):
 
-        query = query.strip()
+        skip = (page - 1) * limit
 
-        if not query:
-            return self.get_all_products(db)
+        products = self.product_repository.search_products(
+            db,
+            query,
+            skip,
+            limit,
+        )
 
-        return self.product_repository.search_products(
+        total = self.product_repository.count_search_products(
             db,
             query,
         )
 
+        pages = (total + limit - 1) // limit
+
+        return {
+            "items": products,
+            "page": page,
+            "limit": limit,
+            "total": total,
+            "pages": pages,
+        }
 
 product_service = ProductService()

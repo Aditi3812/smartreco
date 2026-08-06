@@ -12,6 +12,7 @@ from app.database.database import get_db
 from app.schemas.user import UserCreate
 from app.services.auth_service import auth_service
 from app.services.jwt_service import jwt_service
+from app.auth.permissions import require_admin
 templates = Jinja2Templates(directory="app/templates")
 
 
@@ -96,7 +97,13 @@ def login(
     )
 
     return response
-
+@router.get("/admin")
+def admin_dashboard(
+    admin=Depends(require_admin),
+):
+    return {
+        "message": f"Welcome Admin {admin.username}"
+    }
 @router.get("/me")
 def read_me(
     current_user = Depends(get_current_user),

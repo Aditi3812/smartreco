@@ -30,3 +30,7 @@ mypy==1.19.1
 PyJWT
 
 python-jose[cryptography]
+
+authlib
+httpx
+itsdangerous

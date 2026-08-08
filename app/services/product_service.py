@@ -67,8 +67,8 @@ class ProductService:
     def get_all_products(
     self,
     db: Session,
-    page: int,
-    limit: int,
+    page: int = 1,
+    limit: int = 100,
 ):
 
         skip = (page - 1) * limit
@@ -132,35 +132,56 @@ class ProductService:
             product,
         )
     def search_products(
-    self,
-    db: Session,
-    query: str,
-    page: int,
-    limit: int,
-):
+        self,
+        db: Session,
+        query: str = "",
+        page: int = 1,
+        limit: int = 10,
+        category: str | None = None,
+        difficulty: str | None = None,
+        language: str | None = None,
+        min_price: float | None = None,
+        max_price: float | None = None,
+        min_duration: int | None = None,
+        max_duration: int | None = None,
+    ):
 
-        skip = (page - 1) * limit
+            skip = (page - 1) * limit
 
-        products = self.product_repository.search_products(
-            db,
-            query,
-            skip,
-            limit,
-        )
+            products = self.product_repository.search_products(
+                db,
+                query,
+                category,
+                difficulty,
+                language,
+                min_price,
+                max_price,
+                min_duration,
+                max_duration,
+                skip,
+                limit,
+            )
 
-        total = self.product_repository.count_search_products(
-            db,
-            query,
-        )
+            total = self.product_repository.count_search_products(
+                db,
+                query,
+                category,
+                difficulty,
+                language,
+                min_price,
+                max_price,
+                min_duration,
+                max_duration,
+            )
 
-        pages = (total + limit - 1) // limit
+            pages = (total + limit - 1) // limit
 
-        return {
-            "items": products,
-            "page": page,
-            "limit": limit,
-            "total": total,
-            "pages": pages,
-        }
+            return {
+                "items": products,
+                "page": page,
+                "limit": limit,
+                "total": total,
+                "pages": pages,
+            }
 
 product_service = ProductService()

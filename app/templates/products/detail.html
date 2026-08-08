@@ -1,98 +1,33 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
+{% block content %}
+<div id="product-page" data-product-id="{{ product.id }}" data-category="{{ product.category }}">
 
-<head>
+    <h1>{{ product.title }}</h1>
 
-<title>
-{{product.title}}
-</title>
+    <p>{{ product.description }}</p>
 
-</head>
+    <hr>
 
+    <h3>Category</h3>
+    <p>{{ product.category }}</p>
 
-<body>
+    <h3>Difficulty</h3>
+    <p>{{ product.difficulty }}</p>
 
+    <h3>Instructor</h3>
+    <p>{{ product.instructor }}</p>
 
-<h1>
-{{product.title}}
-</h1>
+    <h3>Duration</h3>
+    <p>{{ product.duration }} hours</p>
 
+    <h3>Skills</h3>
+    <p>{{ product.skills }}</p>
 
-<p>
-{{product.description}}
-</p>
+    <h3>Tags</h3>
+    <p>{{ product.tags }}</p>
 
+    <h2>Price: ₹{{ product.price }}</h2>
 
-<hr>
-
-
-<h3>
-Category
-</h3>
-
-<p>
-{{product.category}}
-</p>
-
-
-
-<h3>
-Difficulty
-</h3>
-
-<p>
-{{product.difficulty}}
-</p>
-
-
-
-<h3>
-Instructor
-</h3>
-
-<p>
-{{product.instructor}}
-</p>
-
-
-
-<h3>
-Duration
-</h3>
-
-<p>
-{{product.duration}} hours
-</p>
-
-
-
-<h3>
-Skills
-</h3>
-
-<p>
-{{product.skills}}
-</p>
-
-
-
-<h3>
-Tags
-</h3>
-
-<p>
-{{product.tags}}
-</p>
-
-
-
-<h2>
-Price: ₹{{product.price}}
-</h2>
-
-
-</body>
-
-
-</html>
+</div>
+{% endblock %}

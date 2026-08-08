@@ -1,108 +1,110 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-
-<head>
-<title>Products</title>
-</head>
-
-
-<body>
-
+{% block content %}
 <h1>SmartReco Catalog</h1>
-<form method="GET">
 
+<form id="filter-form">
     <input
         type="text"
-        name="q"
-        placeholder="Search courses..."
-        value="{{ query }}"
+        id="q"
+        placeholder="Search products..."
+        value="{{ query or '' }}"
     >
 
-    <button>
-        Search
-    </button>
+    <select id="category">
+        <option value="">All Categories</option>
+        <option value="AI" {% if category == "AI" %}selected{% endif %}>AI</option>
+        <option value="Programming" {% if category == "Programming" %}selected{% endif %}>Programming</option>
+        <option value="Data Science" {% if category == "Data Science" %}selected{% endif %}>Data Science</option>
+    </select>
 
+    <select id="difficulty">
+        <option value="">All Difficulties</option>
+        <option value="Beginner" {% if difficulty == "Beginner" %}selected{% endif %}>Beginner</option>
+        <option value="Intermediate" {% if difficulty == "Intermediate" %}selected{% endif %}>Intermediate</option>
+        <option value="Advanced" {% if difficulty == "Advanced" %}selected{% endif %}>Advanced</option>
+    </select>
+
+    <select id="language">
+        <option value="">All Languages</option>
+        <option value="English" {% if language == "English" %}selected{% endif %}>English</option>
+        <option value="Hindi" {% if language == "Hindi" %}selected{% endif %}>Hindi</option>
+    </select>
+
+    <input
+        type="number"
+        id="min_price"
+        placeholder="Min price"
+        value="{{ min_price or '' }}"
+        min="0"
+    >
+
+    <input
+        type="number"
+        id="max_price"
+        placeholder="Max price"
+        value="{{ max_price or '' }}"
+        min="0"
+    >
+
+    <button
+    type="submit"
+    id="apply-filters"
+>
+    Apply Filters
+</button>
 </form>
+
+<script>
+document.getElementById("filter-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    const fields = ["q", "category", "difficulty", "language", "min_price", "max_price"];
+
+    fields.forEach(function(field) {
+        const element = document.getElementById(field);
+        const value = element.value.trim();
+        if (value !== "") {
+            params.append(field, value);
+        }
+    });
+
+    window.location.href = "/products?" + params.toString();
+});
+</script>
 
 <hr>
 
 {% for product in products %}
-
-<div>
-
-<h2>
-<a href="/products/{{product.id}}">
-{{product.title}}
-</a>
-</h2>
-
-
-<p>
-{{ product.description }}
-</p>
-
-
-<p>
-Category:
-{{ product.category }}
-</p>
-
-
-<p>
-Price:
-{{ product.price }}
-</p>
-
-
-<a href="/products/{{product.id}}">
-View Details
-</a>
-
-
+<div class="product-card">
+    <h2>
+        <a href="/products/{{ product.id }}">{{ product.title }}</a>
+    </h2>
+    <p>{{ product.description }}</p>
+    <p>Category: {{ product.category }}</p>
+    <p>Price: ₹{{ product.price }}</p>
+    <a href="/products/{{ product.id }}">View Details</a>
 </div>
-
 <hr>
-
-
 {% endfor %}
-
-<hr>
-
 
 <div class="pagination">
-
-
 {% if page > 1 %}
-
-<a href="/products?page={{page-1}}&q={{query}}">
-Previous
-</a>
-
+    <a href="/products?page={{ page - 1 }}&limit={{ limit }}&q={{ query or '' }}&category={{ category or '' }}&difficulty={{ difficulty or '' }}&language={{ language or '' }}&min_price={{ min_price or '' }}&max_price={{ max_price or '' }}">
+        Previous
+    </a>
 {% endif %}
-
-
 
 {% for p in range(1, pages + 1) %}
-
-<a href="/products?page={{p}}&q={{query}}">
-{{p}}
-</a>
-
+    <a href="/products?page={{ p }}&limit={{ limit }}&q={{ query or '' }}&category={{ category or '' }}&difficulty={{ difficulty or '' }}&language={{ language or '' }}&min_price={{ min_price or '' }}&max_price={{ max_price or '' }}">
+        {{ p }}
+    </a>
 {% endfor %}
 
-
-
 {% if page < pages %}
-
-<a href="/products?page={{page+1}}&q={{query}}">
-Next
-</a>
-
+    <a href="/products?page={{ page + 1 }}&limit={{ limit }}&q={{ query or '' }}&category={{ category or '' }}&difficulty={{ difficulty or '' }}&language={{ language or '' }}&min_price={{ min_price or '' }}&max_price={{ max_price or '' }}">
+        Next
+    </a>
 {% endif %}
-
-
 </div>
-</body>
-
-</html>
+{% endblock %}

@@ -3,3 +3,4 @@ from .product import (
     ProductUpdate,
     ProductResponse,
 )
+from app.schemas.event import EventCreate, EventResponse

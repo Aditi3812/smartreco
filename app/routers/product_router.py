@@ -44,27 +44,67 @@ def create_product(
     "",
     response_class=HTMLResponse,
 )
+@router.get(
+    "",
+    response_class=HTMLResponse,
+)
 def product_catalog(
     request: Request,
     db: Session = Depends(get_db),
+
     q: str = Query(default=""),
+
     page: int = Query(
         default=1,
         ge=1,
     ),
+
     limit: int = Query(
         default=10,
         ge=1,
         le=100,
     ),
+
+    category: str | None = Query(default=None),
+
+    difficulty: str | None = Query(default=None),
+
+    language: str | None = Query(default=None),
+
+    min_price: float | None = Query(
+        default=None,
+        ge=0,
+    ),
+
+    max_price: float | None = Query(
+        default=None,
+        ge=0,
+    ),
+
+    min_duration: int | None = Query(
+        default=None,
+        ge=0,
+    ),
+
+    max_duration: int | None = Query(
+        default=None,
+        ge=0,
+    ),
 ):
 
     products_data = product_service.search_products(
-        db,
-        q,
-        page,
-        limit,
-    )
+    db,
+    q,
+    page,
+    limit,
+    category,
+    difficulty,
+    language,
+    min_price,
+    max_price,
+    min_duration,
+    max_duration,
+)
 
     return templates.TemplateResponse(
         request=request,
@@ -76,6 +116,13 @@ def product_catalog(
             "page": products_data["page"],
             "pages": products_data["pages"],
             "total": products_data["total"],
+            "category": category,
+            "difficulty": difficulty,
+            "language": language,
+            "min_price": min_price,
+            "max_price": max_price,
+            "min_duration": min_duration,
+            "max_duration": max_duration,
         },
     )
 @router.get(

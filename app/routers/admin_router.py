@@ -30,7 +30,11 @@ def admin_products(
     user=Depends(require_admin),
 ):
 
-    products = product_service.get_all_products(db)
+    products = product_service.get_all_products(
+    db,
+    page=1,
+    limit=100,
+)
 
     return templates.TemplateResponse(
         request=request,

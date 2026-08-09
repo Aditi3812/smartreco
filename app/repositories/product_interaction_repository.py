@@ -101,6 +101,23 @@ class ProductInteractionRepository:
         db.refresh(interaction)
 
         return interaction
+    def get_top_by_user(
+        self,
+        db: Session,
+        user_id: int,
+        limit: int = 10,
+    ):
+        return (
+            db.query(ProductInteraction)
+            .filter(
+                ProductInteraction.user_id == user_id
+            )
+            .order_by(
+                ProductInteraction.final_score.desc()
+            )
+            .limit(limit)
+            .all()
+        )
 
 
 product_interaction_repository = (

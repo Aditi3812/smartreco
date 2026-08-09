@@ -34,3 +34,7 @@ python-jose[cryptography]
 authlib
 httpx
 itsdangerous
+
+qdrant-client
+
+sentence-transformers

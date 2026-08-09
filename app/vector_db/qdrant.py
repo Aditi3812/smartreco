@@ -1,0 +1,49 @@
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams
+
+
+QDRANT_URL = "http://localhost:6333"
+
+COLLECTION_NAME = "smartreco_products"
+
+qdrant_client = QdrantClient(
+    url=QDRANT_URL
+)
+
+
+def create_products_collection():
+
+    collections = (
+        qdrant_client
+        .get_collections()
+        .collections
+    )
+
+    existing_names = {
+        collection.name
+        for collection in collections
+    }
+
+    if COLLECTION_NAME in existing_names:
+
+        print(
+            f"Collection '{COLLECTION_NAME}' "
+            "already exists."
+        )
+
+        return
+
+    qdrant_client.create_collection(
+
+        collection_name=COLLECTION_NAME,
+
+        vectors_config=VectorParams(
+            size=384,
+            distance=Distance.COSINE,
+        ),
+    )
+
+    print(
+        f"Created collection: "
+        f"{COLLECTION_NAME}"
+    )

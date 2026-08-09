@@ -361,6 +361,19 @@ class ProductInteractionService:
             score,
             4,
         )
+    def get_top_products(
+        self,
+        db: Session,
+        user_id: int,
+        limit: int = 10,
+    ):
+        return (
+            self.interaction_repository.get_top_by_user(
+                db,
+                user_id,
+                limit,
+            )
+        )
 
 
 product_interaction_service = (

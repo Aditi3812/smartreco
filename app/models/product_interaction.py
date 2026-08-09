@@ -8,7 +8,7 @@ from sqlalchemy import (
     ForeignKey,
     UniqueConstraint,
 )
-
+from sqlalchemy.orm import relationship
 from app.database.base import Base
 
 
@@ -39,7 +39,10 @@ class ProductInteraction(Base):
         ForeignKey("products.id"),
         nullable=False,
     )
-
+    product = relationship(
+        "Product",
+        lazy="joined",
+    )
     view_count = Column(
         Integer,
         default=0,

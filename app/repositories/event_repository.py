@@ -80,4 +80,22 @@ class EventRepository:
             )
             .all()
         )
+    def get_recent_by_user(
+        self,
+        db: Session,
+        user_id: int,
+        limit: int = 10,
+    ):
+
+        return (
+            db.query(Event)
+            .filter(
+                Event.user_id == user_id
+            )
+            .order_by(
+                Event.created_at.desc()
+            )
+            .limit(limit)
+            .all()
+        )
 event_repository = EventRepository()

@@ -28,4 +28,5 @@ dependencies = [
     "qdrant-client>=1.19.0",
     "sentence-transformers>=5.7.0",
     "langgraph>=1.2.10",
+    "openai>=2.53.0",
 ]

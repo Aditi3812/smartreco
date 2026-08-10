@@ -40,7 +40,7 @@ class RecommendationState(TypedDict, total=False):
     # -----------------------------------------
     # Agent output
     # -----------------------------------------
-
+    ai_recommendation: list[str]
     explanations: list[str]
 
     # -----------------------------------------

@@ -115,7 +115,19 @@ try:
         )
 
     print("=" * 80)
+    print("\n")
+    print("=" * 70)
+    print("AI GENERATED RECOMMENDATION")
+    print("=" * 70)
 
+    print(
+        result.get(
+            "ai_recommendation",
+            "No recommendation generated.",
+        )
+    )
+
+    print("=" * 70)
 finally:
 
     db.close()

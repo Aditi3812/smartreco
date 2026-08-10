@@ -20,7 +20,9 @@ from app.services.semantic_retrieval_service import (
 from app.services.hybrid_ranking_service import (
     hybrid_ranking_service,
 )
-
+from app.services.recommendation_generation_service import (
+    recommendation_generation_service,
+)
 from app.models.product import Product
 
 
@@ -386,6 +388,31 @@ def hybrid_rank(
         )
     }
 
+def generate_ai_recommendation(
+    state: RecommendationState,
+):
+
+    ranked = state.get(
+        "ranked_recommendations",
+        []
+    )
+
+
+    behavior = state.get(
+        "behavior_summary",
+        {}
+    )
+
+
+    result = recommendation_generation_service.generate(
+        ranked,
+        behavior,
+    )
+
+
+    return {
+        "ai_recommendation": result
+    }
 # =========================================================
 # 6. BUILD LANGGRAPH AGENT
 # =========================================================
@@ -424,7 +451,10 @@ def build_recommendation_agent():
         "hybrid_rank",
         hybrid_rank,
     )
-
+    graph.add_node(
+        "generate_ai_recommendation",
+        generate_ai_recommendation,
+    )
     # =====================================================
     # Edges
     # =====================================================
@@ -456,6 +486,12 @@ def build_recommendation_agent():
 
     graph.add_edge(
         "hybrid_rank",
+        "generate_ai_recommendation",
+    )
+
+
+    graph.add_edge(
+        "generate_ai_recommendation",
         END,
     )
 

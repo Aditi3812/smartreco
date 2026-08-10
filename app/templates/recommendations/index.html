@@ -1,0 +1,135 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartReco Recommendations</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        .recommendation {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .rank {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .score {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .score span {
+            margin-right: 15px;
+        }
+
+        .empty {
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Recommended For You</h1>
+
+    {% if recommendations %}
+
+        {% for item in recommendations %}
+
+            {% set recommendation = item.recommendation %}
+            {% set product = item.product %}
+
+            <div class="recommendation">
+
+                <div class="rank">
+                    #{{ recommendation.rank }}
+                </div>
+
+                <h2>
+                    {{ product.title }}
+                </h2>
+
+                <p>
+                    {{ product.description }}
+                </p>
+
+                <p>
+                    <strong>Category:</strong>
+                    {{ product.category }}
+                </p>
+
+                <p>
+                    <strong>Difficulty:</strong>
+                    {{ product.difficulty }}
+                </p>
+
+                <p>
+                    <strong>Price:</strong>
+                    ₹{{ product.price }}
+                </p>
+
+                <div class="score">
+
+                    <span>
+                        Behavioral:
+                        {{ "%.4f"|format(
+                            recommendation.behavioral_score
+                        ) }}
+                    </span>
+
+                    <span>
+                        Semantic:
+                        {{ "%.4f"|format(
+                            recommendation.semantic_score
+                        ) }}
+                    </span>
+
+                    <span>
+                        Preference:
+                        {{ "%.4f"|format(
+                            recommendation.preference_score
+                        ) }}
+                    </span>
+
+                    <strong>
+                        Final:
+                        {{ "%.4f"|format(
+                            recommendation.final_score
+                        ) }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p class="empty">
+            No recommendations available yet.
+        </p>
+
+    {% endif %}
+
+</body>
+</html>
+```

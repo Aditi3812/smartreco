@@ -4,6 +4,9 @@ from fastapi.templating import Jinja2Templates
 from app.routers.product_router import (
     router as product_router,
 )
+from app.routers.recommendation_router import (
+    router as recommendation_router,
+)
 from app.routers.auth_router import router as auth_router
 from app.routers.admin_router import router as admin_router
 from app.routers.event_router import router as event_router
@@ -23,6 +26,9 @@ app.include_router(auth_router)
 app.include_router(product_router)
 app.include_router(admin_router)
 app.include_router(event_router)
+app.include_router(
+    recommendation_router
+)
 
 @app.get("/")
 def home():

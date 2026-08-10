@@ -23,6 +23,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
+from app.models.recommendation import Recommendation
 from app.database.base import Base
 import app.models
 target_metadata = Base.metadata

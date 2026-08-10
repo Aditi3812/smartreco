@@ -60,6 +60,15 @@ class ProductRepository:
             .limit(limit)
             .all()
         )
+
+    def get_all(
+    self,
+    db: Session,
+):
+        return (
+            db.query(Product)
+            .all()
+        )
     
     def count_search_products(
     self,

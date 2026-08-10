@@ -1,3 +1,5 @@
+from app.services.embedding_service import embedding_service
+from app.services.qdrant_service import qdrant_service
 from sqlalchemy.orm import Session
 
 from app.repositories.product_repository import ProductRepository
@@ -43,7 +45,7 @@ class ProductService:
                 "Product already exists."
             )
 
-        # ---------- Save ----------
+        # ---------- Save to PostgreSQL ----------
 
         created_product = (
             self.product_repository.create_product(
@@ -51,6 +53,41 @@ class ProductService:
                 product,
             )
         )
+
+        # ---------- Generate Embedding ----------
+
+        embedding = (
+            embedding_service
+            .generate_product_embedding(
+                created_product
+            )
+        )
+
+        # ---------- Store Embedding in Qdrant ----------
+
+        payload = {
+            "product_id": created_product.id,
+            "title": created_product.title,
+            "category": created_product.category,
+            "difficulty": created_product.difficulty,
+            "language": created_product.language,
+            "price": created_product.price,
+            "skills": created_product.skills,
+            "tags": created_product.tags,
+        }
+
+        qdrant_service.upsert_product(
+            product_id=created_product.id,
+            embedding=embedding,
+            payload=payload,
+        )
+
+        # ---------- Mark embedding as generated ----------
+
+        created_product.embedding_generated = True
+
+        db.commit()
+        db.refresh(created_product)
 
         return created_product
 

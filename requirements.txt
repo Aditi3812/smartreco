@@ -38,3 +38,4 @@ itsdangerous
 qdrant-client
 
 sentence-transformers
+langgraph

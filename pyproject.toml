@@ -27,4 +27,5 @@ dependencies = [
     "itsdangerous>=2.2.0",
     "qdrant-client>=1.19.0",
     "sentence-transformers>=5.7.0",
+    "langgraph>=1.2.10",
 ]

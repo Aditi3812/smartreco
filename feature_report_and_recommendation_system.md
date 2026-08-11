@@ -108,7 +108,7 @@ $$\text{InteractionScore} = 0.30 \cdot \text{ViewScore} + 0.30 \cdot \text{TimeS
 #### 2. Recency Decay
 To ensure user interest changes are reflected immediately, an exponential decay function is applied:
 
-$$\text{RecencyScore} = e^{-0.10 \times \text{age\_days}}$$
+`RecencyScore = e^(-0.10 * age_days)`
 
 $$\text{Final Behavioral Score} = \text{InteractionScore} \times \text{RecencyScore}$$
 

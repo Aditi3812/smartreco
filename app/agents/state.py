@@ -40,7 +40,7 @@ class RecommendationState(TypedDict, total=False):
     # -----------------------------------------
     # Agent output
     # -----------------------------------------
-    ai_recommendation: list[str]
+    ai_recommendation: dict | None
     explanations: list[str]
 
     # -----------------------------------------
@@ -50,3 +50,4 @@ class RecommendationState(TypedDict, total=False):
     limit: int
 
     error: str | None
+    should_generate: bool

@@ -1,3 +1,6 @@
+import math
+from datetime import datetime, timezone
+
 
 class HybridRankingService:
     """
@@ -20,6 +23,78 @@ class HybridRankingService:
     PREFERENCE_WEIGHT = 0.15
 
     # =========================================================
+    # INTERNAL: On-the-fly interaction score
+    # =========================================================
+
+    def _compute_interaction_score_from_raw(
+        self,
+        interaction,
+    ) -> float:
+        """
+        Replicates ProductInteractionService.calculate_interaction_score()
+        on-the-fly using the raw metric columns that are always populated
+        by the Phase-2 event pipeline, even when the pre-computed
+        interaction_score / final_score columns are None or zero.
+        """
+
+        MAX_VIEWS = 20
+        MAX_TIME = 300
+        MAX_SEARCHES = 5
+
+        view_count = interaction.view_count or 0
+        total_time_spent = interaction.total_time_spent or 0.0
+        max_scroll_depth = interaction.max_scroll_depth or 0.0
+        search_count = interaction.search_count or 0
+
+        view_score = (
+            math.log1p(view_count)
+            / math.log1p(MAX_VIEWS)
+        )
+        view_score = min(view_score, 1.0)
+
+        time_score = min(total_time_spent / MAX_TIME, 1.0)
+
+        scroll_score = min(max_scroll_depth / 100, 1.0)
+
+        search_score = min(search_count / MAX_SEARCHES, 1.0)
+
+        score = (
+            0.30 * view_score
+            + 0.30 * time_score
+            + 0.25 * scroll_score
+            + 0.15 * search_score
+        )
+
+        return round(score, 4)
+
+    # =========================================================
+    # INTERNAL: On-the-fly recency score
+    # =========================================================
+
+    def _compute_recency_score_from_raw(
+        self,
+        interaction,
+    ) -> float:
+        """
+        Replicates ProductInteractionService.calculate_recency_score()
+        using the last_interacted_at column that is always written by
+        the Phase-2 event pipeline.
+        """
+
+        if not interaction.last_interacted_at:
+            return 1.0
+
+        now = datetime.now(timezone.utc)
+        last_at = interaction.last_interacted_at
+
+        if last_at.tzinfo is None:
+            last_at = last_at.replace(tzinfo=timezone.utc)
+
+        age_days = (now - last_at).total_seconds() / 86400
+
+        return round(math.exp(-0.1 * age_days), 4)
+
+    # =========================================================
     # 1. BEHAVIORAL SCORE
     # =========================================================
 
@@ -27,35 +102,79 @@ class HybridRankingService:
         self,
         product_id: int,
         interactions,
+        behavior_profile=None,
+        product=None,
     ) -> float:
         """
-        Returns the existing product-level behavioral score.
+        Returns a behavioral score for a candidate product using a
+        three-tier resolution strategy:
 
-        ProductInteraction already stores:
-            interaction_score
-            recency_score
-            final_score
+        Tier 1 — Direct interaction with a valid pre-computed final_score.
+            Use it directly; it already encodes interaction + recency.
 
-        We use final_score because it represents the combined
-        behavioral + recency signal for that user/product pair.
+        Tier 2 — Direct interaction exists but final_score is None or 0.0.
+            Compute the score on-the-fly from the raw metric columns
+            (view_count, total_time_spent, max_scroll_depth, search_count)
+            that the Phase-2 event pipeline always populates, then apply
+            the same recency decay used by ProductInteractionService.
 
-        If the product has never been interacted with,
-        behavioral_score = 0.0.
+        Tier 3 — No direct interaction record for this candidate product.
+            Common for vector-retrieved items the user has never viewed.
+            Use 50 % of the user's category engagement score from
+            behavior_profile as a proportional cold-start fallback
+            instead of hard-coding 0.0.
         """
+
+        # ----------------------------------------------------------
+        # Tier 1 & Tier 2: scan existing interaction records
+        # ----------------------------------------------------------
 
         for interaction in interactions:
 
-            if interaction.product_id == product_id:
+            if interaction.product_id != product_id:
+                continue
 
-                score = interaction.final_score
+            # ---- Tier 1: valid pre-computed final_score ----
 
-                if score is None:
-                    return 0.0
+            final_score = interaction.final_score
 
-                return max(
-                    0.0,
-                    min(float(score), 1.0),
-                )
+            if final_score is not None and float(final_score) > 0.0:
+                return max(0.0, min(float(final_score), 1.0))
+
+            # ---- Tier 2: on-the-fly computation from raw metrics ----
+
+            interaction_score = self._compute_interaction_score_from_raw(
+                interaction
+            )
+            recency_score = self._compute_recency_score_from_raw(
+                interaction
+            )
+
+            computed = round(interaction_score * recency_score, 4)
+            return max(0.0, min(computed, 1.0))
+
+        # ----------------------------------------------------------
+        # Tier 3: no direct interaction — category engagement fallback
+        # ----------------------------------------------------------
+
+        if behavior_profile is not None and product is not None:
+
+            category_scores = (
+                behavior_profile.category_scores
+                or {}
+            )
+
+            cat_score = category_scores.get(
+                product.category,
+                0.0,
+            )
+
+            # 50 % of category engagement is a proportional
+            # signal that avoids collapsing cold-start candidates
+            # to a uniform zero while remaining clearly below
+            # genuinely interacted-with products.
+            fallback = round(0.5 * float(cat_score), 4)
+            return max(0.0, min(fallback, 1.0))
 
         return 0.0
 
@@ -68,6 +187,9 @@ class HybridRankingService:
         product,
         behavior_profile,
     ) -> float:
+
+        if behavior_profile is None:
+            return 0.0
 
         score = 0.0
 
@@ -143,8 +265,18 @@ class HybridRankingService:
         self,
         candidates,
         behavior_profile,
-        interactions,
+        interactions=None,
     ):
+        """
+        Ranks all candidates by hybrid score.
+
+        `interactions` defaults to [] so that the two-argument call
+        from recommendation_service.py degrades gracefully to the
+        Tier 3 category fallback instead of raising a TypeError.
+        """
+
+        if interactions is None:
+            interactions = []
 
         ranked = []
 
@@ -155,13 +287,15 @@ class HybridRankingService:
             product_id = product.id
 
             # -----------------------------------------
-            # Behavioral signal
+            # Behavioral signal (three-tier)
             # -----------------------------------------
 
             behavioral_score = (
                 self.calculate_behavioral_score(
                     product_id,
                     interactions,
+                    behavior_profile=behavior_profile,
+                    product=product,
                 )
             )
 

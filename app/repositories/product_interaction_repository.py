@@ -58,7 +58,7 @@ class ProductInteractionRepository:
         )
 
         db.add(interaction)
-        db.commit()
+        db.flush()
         db.refresh(interaction)
 
         return interaction
@@ -97,7 +97,7 @@ class ProductInteractionRepository:
             datetime.now(UTC)
         )
 
-        db.commit()
+        db.flush()
         db.refresh(interaction)
 
         return interaction

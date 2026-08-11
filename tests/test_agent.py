@@ -12,7 +12,7 @@ try:
 
     result = recommendation_agent.invoke(
         {
-            "user_id": 3,
+            "user_id": 4,
             "limit": 5,
             "db": db,
         }

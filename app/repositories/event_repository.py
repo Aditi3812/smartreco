@@ -28,9 +28,7 @@ class EventRepository:
         )
 
         db.add(event)
-
-        db.commit()
-
+        db.flush()
         db.refresh(event)
 
         return event

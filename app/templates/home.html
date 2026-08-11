@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartReco - Intelligent Learning Recommendations</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo { font-size: 24px; font-weight: bold; color: #007bff; text-decoration: none; }
+
+        .nav-links { display: flex; align-items: center; gap: 15px; }
+        
+        .nav-links .btn-products {
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            padding: 8px 16px;
+            transition: color 0.2s;
+        }
+        .nav-links .btn-products:hover { color: #007bff; }
+
+        .btn-login {
+            color: #007bff;
+            border: 1px solid #007bff;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .btn-login:hover { background-color: #f0f7ff; }
+
+        .btn-register {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        .btn-register:hover { background-color: #0056b3; }
+
+        .container {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .hero-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 50px 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border: 1px solid #eaeaea;
+            text-align: center;
+        }
+
+        .hero-card h1 {
+            font-size: 36px;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .hero-card p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+        .btn-primary:hover { background-color: #0056b3; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="/" class="logo">SmartReco</a>
+        <div class="nav-links">
+            <a href="/products" class="btn-products">All Courses</a>
+            <a href="/login" class="btn-login">Log In</a>
+            <a href="/register" class="btn-register">Sign Up</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero-card">
+            <h1>Welcome to SmartReco 🎉</h1>
+            <p>Discover tech courses tailored precisely to your learning goals, skill background, and career aspirations.</p>
+
+            <div class="action-buttons">
+                <a href="/products" class="btn-primary">Explore All Courses →</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -5,24 +5,24 @@ import json
 
 class RecommendationGenerationService:
 
-
     def generate(
         self,
         ranked_products,
         behavior_summary,
     ):
-
+        if not ranked_products:
+            return None
 
         products_text = ""
 
-
         for item in ranked_products:
-
             product = item["product"]
 
             products_text += f"""
+Product ID:
+{product.id}
 
-Product:
+Product Title:
 {product.title}
 
 Category:
@@ -39,9 +39,7 @@ Semantic Match:
 
 Preference Match:
 {item["preference_score"]}
-
 """
-
 
         system_prompt = """
 You are SmartReco,
@@ -53,7 +51,7 @@ from the products provided.
 Rules:
 
 1. Recommend ONLY a product from the provided list.
-2. Do not invent product details.
+2. Do not invent product details or change product IDs.
 3. Use the behavioral information and ranking scores.
 4. Explain why the selected product matches the user.
 5. Return ONLY valid JSON.
@@ -85,18 +83,6 @@ Select the single best recommendation.
 Return ONLY the required JSON object.
 """
 
-
-        response = mesh_llm_service.generate(
-
-            system_prompt,
-
-            user_prompt,
-
-        )
-
-
-        
-
         response = mesh_llm_service.generate(
             system_prompt,
             user_prompt,
@@ -109,8 +95,14 @@ Return ONLY the required JSON object.
                 f"LLM returned invalid JSON: {response}"
             )
 
-        return recommendation
+        # Enforce exact database product_id from the top-ranked product if missing or wrong
+        top_product = ranked_products[0]["product"]
+        if recommendation.get("product_id") != top_product.id:
+            recommendation["product_id"] = top_product.id
+            if not recommendation.get("title"):
+                recommendation["title"] = top_product.title
 
+        return recommendation
 
 
 recommendation_generation_service = (

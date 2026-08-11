@@ -1,10 +1,8 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>SmartReco Recommendations</title>
 
     <style>
@@ -15,8 +13,28 @@
             padding: 0 20px;
         }
 
-        h1 {
-            margin-bottom: 30px;
+        h1, h2 {
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .ai-card {
+            border: 2px solid #007bff;
+            background-color: #f4f8ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .recommendation {
@@ -29,6 +47,15 @@
         .rank {
             font-size: 14px;
             font-weight: bold;
+            color: #555;
+        }
+
+        .reason {
+            margin-top: 12px;
+            padding: 10px;
+            background-color: #ffffff;
+            border-left: 3px solid #007bff;
+            font-style: italic;
         }
 
         .score {
@@ -50,86 +77,60 @@
 
     <h1>Recommended For You</h1>
 
-    {% if recommendations %}
+    <!-- SECTION 1: Top AI Pick (LLM Node Output) -->
+    {% if ai_pick %}
+        <div class="ai-card">
+            <div class="badge">🤖 AI Agent Top Choice</div>
+            <h2>{{ ai_pick.product.title }}</h2>
+            <p>{{ ai_pick.product.description }}</p>
+            <p><strong>Category:</strong> {{ ai_pick.product.category }} | <strong>Price:</strong> ₹{{ ai_pick.product.price }}</p>
 
-        {% for item in recommendations %}
+            {% if ai_pick.reason %}
+            <div class="reason">
+                <strong>Why AI Picked This:</strong> {{ ai_pick.reason }}
+            </div>
+            {% endif %}
 
+            <div class="score">
+                <strong>Confidence Score: {{ "%.4f"|format(ai_pick.confidence) }}</strong>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- SECTION 2: Top K Hybrid Rank Node Output -->
+    <h2>Top Algorithmic Matches (Hybrid Rank Node)</h2>
+
+    {% if hybrid_recommendations %}
+        {% for item in hybrid_recommendations %}
             {% set recommendation = item.recommendation %}
             {% set product = item.product %}
 
             <div class="recommendation">
-
-                <div class="rank">
-                    #{{ recommendation.rank }}
-                </div>
-
-                <h2>
-                    {{ product.title }}
-                </h2>
-
-                <p>
-                    {{ product.description }}
-                </p>
-
-                <p>
-                    <strong>Category:</strong>
-                    {{ product.category }}
-                </p>
-
-                <p>
-                    <strong>Difficulty:</strong>
-                    {{ product.difficulty }}
-                </p>
-
-                <p>
-                    <strong>Price:</strong>
-                    ₹{{ product.price }}
-                </p>
+                <div class="rank">#{{ item.rank }} Hybrid Rank Score</div>
+                <h3>{{ product.title }}</h3>
+                <p>{{ product.description }}</p>
+                <p><strong>Category:</strong> {{ product.category }} | <strong>Difficulty:</strong> {{ product.difficulty }} | <strong>Price:</strong> ₹{{ product.price }}</p>
 
                 <div class="score">
+                    {% if recommendation.behavioral_score is defined %}
+                    <span>Behavioral: {{ "%.4f"|format(recommendation.behavioral_score) }}</span>
+                    {% endif %}
 
-                    <span>
-                        Behavioral:
-                        {{ "%.4f"|format(
-                            recommendation.behavioral_score
-                        ) }}
-                    </span>
+                    {% if recommendation.semantic_score is defined %}
+                    <span>Semantic: {{ "%.4f"|format(recommendation.semantic_score) }}</span>
+                    {% endif %}
 
-                    <span>
-                        Semantic:
-                        {{ "%.4f"|format(
-                            recommendation.semantic_score
-                        ) }}
-                    </span>
+                    {% if recommendation.preference_score is defined %}
+                    <span>Preference: {{ "%.4f"|format(recommendation.preference_score) }}</span>
+                    {% endif %}
 
-                    <span>
-                        Preference:
-                        {{ "%.4f"|format(
-                            recommendation.preference_score
-                        ) }}
-                    </span>
-
-                    <strong>
-                        Final:
-                        {{ "%.4f"|format(
-                            recommendation.final_score
-                        ) }}
-                    </strong>
-
+                    <strong>Final Score: {{ "%.4f"|format(recommendation.final_score|default(0.0)) }}</strong>
                 </div>
-
             </div>
-
         {% endfor %}
-
     {% else %}
-
-        <p class="empty">
-            No recommendations available yet.
-        </p>
-
+        <p class="empty">No hybrid candidate scores available.</p>
     {% endif %}
 
 </body>
 </html>
-```

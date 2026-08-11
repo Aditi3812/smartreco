@@ -41,7 +41,7 @@ class BehaviorProfileRepository:
         )
 
         db.add(profile)
-        db.commit()
+        db.flush()
         db.refresh(profile)
 
         return profile
@@ -70,8 +70,7 @@ class BehaviorProfileRepository:
         db: Session,
         profile: BehaviorProfile,
     ):
-
-        db.commit()
+        db.flush()
         db.refresh(profile)
 
         return profile

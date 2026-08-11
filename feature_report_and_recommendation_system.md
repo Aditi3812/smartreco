@@ -181,6 +181,7 @@ graph TD
     Rank --> LLM[generate_ai_recommendation]
     LLM --> End
 ```
+![alt text](image.png)
 
 #### Graph Node Responsibilities
 1. **`check_recommendation_trigger`**: Queries total user event count vs. historical state to determine if recalculation is needed.

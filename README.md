@@ -66,7 +66,7 @@ graph TD
 ### 2. Product Interaction Memory & Exponential Recency Decay
 * Aggregates raw events per `(user_id, product_id)` pair.
 * Calculates interaction intensity based on logarithmic view counts, dwell time, scroll depth, and search frequencies.
-* Applies exponential time decay $\text{Recency} = e^{-0.10 \times \text{age\_days}}$ to prioritize recent user interest over old activity.
+* Applies exponential time decay `Recency = e^(-0.10 * age_days)` to prioritize recent user interest over old activity.
 
 ### 3. Automated Behavior Profiling & Purchase Intent Modeling
 * Dynamically constructs user preference models across categories, difficulty levels, and languages.
@@ -114,29 +114,29 @@ The SmartReco recommendation engine operates on a multi-stage pipeline combining
 ### 1. Product Interaction Score Calculation
 For any specific user and product, raw interaction metrics are normalized and weighted:
 
-$$\text{ViewScore} = \min\left(\frac{\ln(1 + \text{view\_count})}{\ln(1 + 20)}, 1.0\right)$$
+`ViewScore = min(ln(1 + view_count) / ln(1 + 20), 1.0)`
 
-$$\text{TimeScore} = \min\left(\frac{\text{total\_time\_spent}}{300}, 1.0\right)$$
+`TimeScore = min(total_time_spent / 300, 1.0)`
 
-$$\text{ScrollScore} = \min\left(\frac{\text{max\_scroll\_depth}}{100}, 1.0\right)$$
+`ScrollScore = min(max_scroll_depth / 100, 1.0)`
 
-$$\text{SearchScore} = \min\left(\frac{\text{search\_count}}{5}, 1.0\right)$$
+`SearchScore = min(search_count / 5, 1.0)`
 
-$$\text{InteractionScore} = 0.30 \times \text{ViewScore} + 0.30 \times \text{TimeScore} + 0.25 \times \text{ScrollScore} + 0.15 \times \text{SearchScore}$$
+`InteractionScore = 0.30 * ViewScore + 0.30 * TimeScore + 0.25 * ScrollScore + 0.15 * SearchScore`
 
 ### 2. Recency Decay Function
 Interactions decay exponentially based on elapsed days since the last interaction:
 
-$$\text{RecencyScore} = e^{-0.10 \times \text{age\_days}}$$
+`RecencyScore = e^(-0.10 * age_days)`
 
-$$\text{Final Behavioral Score (Interacted)} = \text{InteractionScore} \times \text{RecencyScore}$$
+`Final Behavioral Score (Interacted) = InteractionScore * RecencyScore`
 
 ### 3. Purchase Intent Modeling
 Purchase intent represents the user's likelihood to enroll/buy:
 
-$$\text{RawIntent} = \sum_{\text{events}} \text{Weight}(\text{event\_type}) \times e^{-0.10 \times \text{age\_days}}$$
+`RawIntent = sum(Weight(event_type) * e^(-0.10 * age_days))`
 
-$$\text{PurchaseIntent} = 1 - e^{-\text{RawIntent}}$$
+`PurchaseIntent = 1 - e^(-RawIntent)`
 
 Where weights are:
 * `PRODUCT_VIEW`: 0.05
@@ -147,11 +147,10 @@ Where weights are:
 
 ### 4. Preference Match Score
 Measures catalog alignment with user category and difficulty affinities:
-
-$$\text{PreferenceScore} = 0.60 \times \text{CategoryScore}(\text{product.category}) + 0.40 \times \text{DifficultyScore}(\text{product.difficulty})$$
+`PreferenceScore = 0.60 * CategoryScore(product.category) + 0.40 * DifficultyScore(product.difficulty)`
 
 ### 5. Final Hybrid Ranking Equation
-$$\text{HybridScore} = 0.50 \times S_{\text{behavioral}} + 0.35 \times S_{\text{semantic}} + 0.15 \times S_{\text{preference}}$$
+`HybridScore = 0.50 * S_behavioral + 0.35 * S_semantic + 0.15 * S_preference`
 
 ---
 
